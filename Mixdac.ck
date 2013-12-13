@@ -1,10 +1,9 @@
 // ================================================================================
 // PUBLIC CLASS: Mixdac
-// File    : Mixdac.ck
-// Author  : Dave Haynie
-// Date    : 2013-Dec-07
-// License : Do as thou wilt shall be the whole of the law
-// Note    : PLEASE KEEP IF YOU FIND IT USEFUL
+// File        : Mixdac.ck
+// Author      : Dave Haynie
+// Date        : 2013-Dec-12
+// License     : Do as thou wilt shall be the whole of the law
 // ================================================================================
 //
 // This class defines a global class for multi-file final mixing. Mixdac is an all
