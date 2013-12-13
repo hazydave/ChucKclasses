@@ -40,6 +40,7 @@
 //     * limit()              Enable fairly hard limiting
 //     * gain(float:r/w)      Set global gain for every module using any MixMaster object
 //     * pan(float:r/w)       Set global pan for every module using any MixMaster object
+//     * log(int:w)           Log output to a stereo file (0 = wav, 1 = au, 2 = aiff)
 
 // ===========================================================================================
 // PRIVATE CLASS LevelMeter
@@ -68,7 +69,6 @@ class LevelMeter extends Chugen {
     }
     
     fun int enable(int e) {
-        <<< "peak metering enabled" >>>;
         return (e => enb);
     }
     fun int enable() {
@@ -89,9 +89,6 @@ class LevelMeter extends Chugen {
     // Simple AGC modes
     
     fun int agc(int md) {
-        if (1 == md) {
-            <<< "AGC mode enabled" >>>;
-        }
         return (md => mode); 
     }
     
@@ -215,7 +212,6 @@ public class Mixdac {
         // ChucK environment crashes, if they're not de-ChucKed. Could be a big in this code, 
         // but I have not found it. 
         if (2 == constructed) {
-            <<< "init: reset" >>>;
             in.left  =< left  =< dac.left;
             in.right =< right =< dac.right;
 
@@ -226,7 +222,6 @@ public class Mixdac {
         // ChucK did static inits or had some other static initialization functionality, but since
         // it does reset ints to zero, at least I can fudge it. 
         if (0 == constructed) {
-            <<< "init: cons" >>>;
             // Build all the dynamic stuff we can't statically init as, well, static
             // variables. These are all run-permanent, we never need to free them. 
             new Pan2 @=> in;
@@ -239,7 +234,6 @@ public class Mixdac {
         
         // This function links up the audio chain used within the Mixdac. 
         if (1 == constructed) {
-            <<< "init: link" >>>;
             in.left  => new Outch @=> left  => dac.left;
             in.right => new Outch @=> right => dac.right;  
             clear();
@@ -258,6 +252,38 @@ public class Mixdac {
         right.clear();
         left.clear();
     }   
+    
+    // Start logging this session. This is pulled from the dac, post-processing,
+    // just to simplifing the signal chain and make this part automatically
+    // clean up after itself. 
+    fun static int log(int type, string filename) {  
+        
+        // get audion from the dac
+        dac => WvOut2 logger => blackhole;
+
+        me.dir() + "/" => logger.autoPrefix;
+        
+        // Create the specified file type
+        if (0 == type) {
+            filename => logger.wavFilename;
+        } else if (1 == type) {
+            filename => logger.sndFilename;
+        } else if (2 == type) {
+            filename => logger.aifFilename;
+        }
+        
+        <<<"logging audio to: ", logger.filename()>>>;
+
+        // Probably not necessary... de-linking the logger
+        // causes it to close on spork end. That should happen
+        // anyway when this function exist. 
+        null @=> logger;        
+    }
+    
+    // Log under a different file name
+    fun static int log (int type) {
+        return log (type,"special:auto");
+    }  
     
     // Level meter functions
     fun static int meter(int m) {
