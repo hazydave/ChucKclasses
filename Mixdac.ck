@@ -2,8 +2,8 @@
 // PUBLIC CLASS: Mixdac
 // File        : Mixdac.ck
 // Author      : Dave Haynie
-// Date        : 2013-Dec-12
-// License     : Do as thou wilt shall be the whole of the law
+// Date        : 2013-Dec-16
+// License     : Free as the wind... 
 // ================================================================================
 //
 // This class defines a global class for multi-file final mixing. Mixdac is an all
@@ -243,7 +243,7 @@ public class Mixdac {
     }
     
     fun static int init() {
-        init(1);
+        return init(1);
     }
     
     // Back to normal
@@ -255,12 +255,18 @@ public class Mixdac {
     // Start logging this session. This is pulled from the dac, post-processing,
     // just to simplifing the signal chain and make this part automatically
     // clean up after itself. 
+    
+    // NOTE (16-Dec-2013) I took out the "save to same directory" code here. 
+    // Apparently, the WvOut2 function has a limited file name buffer. When you have a
+    // long enough path name, it just starts writing over top of other ChucK data or 
+    // code. So this was randomly crashing the VM. Still, use with a bit of care
+    // until this is fixed. 
     fun static int log(int type, string filename) {  
         
         // get audion from the dac
         dac => WvOut2 logger => blackhole;
 
-        me.dir() + "/" => logger.autoPrefix;
+        "" => logger.autoPrefix;
         
         // Create the specified file type
         if (0 == type) {
@@ -276,12 +282,13 @@ public class Mixdac {
         // Probably not necessary... de-linking the logger
         // causes it to close on spork end. That should happen
         // anyway when this function exist. 
-        null @=> logger;        
+        null @=> logger;  
+        return type;
     }
     
     // Log under a different file name
     fun static int log (int type) {
-        return log (type,"special:auto");
+        return log(type,"special:auto");
     }  
     
     // Level meter functions
