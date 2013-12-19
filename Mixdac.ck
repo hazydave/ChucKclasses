@@ -17,12 +17,11 @@
 //
 //      Mixdac.init();  or  1 => Mixdac.init;
 //
-// Due to the magic of stereo objects, you chuck into MixMaster's in object, not to
-// the MixMaster object itself. Example: 
+// Due to the magic of stereo objects, you chuck into Mixdac's in object, not to
+// the Mixdac object itself. Example: 
 // 
-//      Mixdac master; 
-//      SinOsc sin  => NRev sin_rvb  => Pan2 sin_pan  => master.in;
-//      SndBuf kick => NRev kick_rvb => Pan2 kick_rvb => master.in;
+//      SinOsc sin  => NRev sin_rvb  => Pan2 sin_pan  => Mixdac.in;
+//      SndBuf kick => NRev kick_rvb => Pan2 kick_rvb => Mixdac.in;
 //
 // Mixmaster supports the following methods:
 //
